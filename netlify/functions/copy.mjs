@@ -17,7 +17,7 @@ export default async (req) => {
   const code = String((body && body.code) || "").trim().slice(0, 64);
   if (!code) return Response.json({ error: "缺少改枪码" }, { status: 400 });
 
-  const store = getStore("delta");
+  const store = getStore({ name: "delta", consistency: "strong" });
   let counts = await store.get("counts", { type: "json" });
   if (!counts || typeof counts !== "object") counts = {};
 

@@ -55,7 +55,7 @@ export default async (req) => {
     return out;
   }).filter((w) => w.name);
 
-  const store = getStore("delta");
+  const store = getStore({ name: "delta", consistency: "strong" });
   await store.setJSON("weapons", clean);
 
   return Response.json({ ok: true, count: clean.length });

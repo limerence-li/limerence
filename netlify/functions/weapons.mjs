@@ -4,7 +4,7 @@ import { weapons as seedWeapons, weaponIcons, categories } from "./_seed.mjs";
 export const config = { path: "/api/weapons" };
 
 export default async () => {
-  const store = getStore("delta");
+  const store = getStore({ name: "delta", consistency: "strong" });
 
   let weapons = await store.get("weapons", { type: "json" });
   if (!weapons || !Array.isArray(weapons) || weapons.length === 0) {
