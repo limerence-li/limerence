@@ -1,0 +1,5 @@
+# 本地编辑器 / 代理配置
+.claude/
+.vscode/
+.DS_Store
+Thumbs.db

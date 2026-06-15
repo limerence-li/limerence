@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>三角洲改枪码大全 · 《三角洲行动》烽火地带</title>
+<meta name="description" content="三角洲行动改枪码大全 · 65+ 把武器、海量改枪码方案、一键复制" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: {
+          mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace']
+        }
+      }
+    }
+  };
+  if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.classList.add('dark');
+  }
+</script>
+<style>
+  body { background: #f3f4f6; }
+  .dark body { background: #111827; }
+  .code-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; line-height: 1.6; word-break: break-all; }
+  .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(99,102,241,.3); border-radius: 3px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+
+  .slot { transition: all .15s ease; }
+  .slot.final { border-color: #10b981 !important; box-shadow: 0 0 0 2px rgba(16,185,129,.2); }
+
+  .weapon-card { transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; cursor: pointer; }
+  .weapon-card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,0,0,.1); border-color: rgba(99,102,241,.5); }
+
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 9999px; border: 1px solid; font-size: 14px; font-weight: 500; cursor: pointer; transition: all .15s; }
+  .pill-on { background: #4f46e5; color: #fff; border-color: #4f46e5; }
+  .pill-off { background: #fff; color: #4f46e5; border-color: #d1d5db; }
+  .pill-off:hover { background: #f3f4f6; }
+  .dark .pill-off { background: #1f2937; color: #a5b4fc; border-color: #374151; }
+  .dark .pill-off:hover { background: #374151; }
+
+  .copy-btn { transition: all .15s ease; }
+  .copy-btn:hover { transform: translateY(-1px); }
+  .copy-btn.copied { background: #10b981 !important; color: white !important; border-color: #10b981 !important; }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1f2937; color: white; padding: 10px 20px; border-radius: 8px; opacity: 0; transition: all .2s; z-index: 200; pointer-events: none; font-size: 14px; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: none; align-items: flex-start; justify-content: center; z-index: 100; padding: 24px 16px; overflow-y: auto; }
+  .modal-back.on { display: flex; }
+  .modal-card { background: #fff; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,.25); max-width: 960px; width: 100%; margin: auto; }
+  .dark .modal-card { background: #1f2937; }
+
+  /* NEW badge pulse */
+  @keyframes pulse-new { 0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, .6); } 50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } }
+  .badge-new { animation: pulse-new 2s infinite; }
+
+  /* Sidebar nav items */
+  .nav-item { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 14px; border-radius: 10px; font-size: 14px; font-weight: 500; color: #4b5563; transition: all .15s ease; text-align: left; }
+  .nav-item i { width: 20px; text-align: center; font-size: 15px; }
+  .dark .nav-item { color: #9ca3af; }
+  .nav-item.nav-active { background: #4f46e5; color: #fff; box-shadow: 0 6px 16px rgba(79,70,229,.35); }
+  .nav-item.nav-active:hover { background: #4338ca; }
+  .nav-item.nav-clickable { cursor: pointer; }
+  .nav-item.nav-clickable:hover { background: #eef2ff; color: #4f46e5; }
+  .dark .nav-item.nav-clickable:hover { background: #312e81; color: #c7d2fe; }
+  .nav-item.nav-disabled { cursor: not-allowed; opacity: .6; }
+  .nav-soon { margin-left: auto; font-size: 10px; padding: 2px 7px; border-radius: 9999px; background: #f3f4f6; color: #9ca3af; font-weight: 600; white-space: nowrap; }
+  .dark .nav-soon { background: #374151; color: #9ca3af; }
+</style>
+</head>
+<body class="text-gray-800 dark:text-gray-200">
+
+<!-- Dark mode toggle -->
+<button id="toggleDark" class="fixed bottom-4 right-4 z-40 p-3 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white shadow-lg transition-transform hover:scale-110">
+  <span id="themeIcon">🌙</span>
+</button>
+
+<!-- Mobile sidebar overlay -->
+<div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden"></div>
+
+<!-- ============== Left Sidebar ============== -->
+<aside id="sidebar" class="fixed top-0 left-0 z-50 h-full w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-200">
+  <!-- Logo -->
+  <div class="h-16 shrink-0 flex items-center gap-3 px-5 border-b border-gray-200 dark:border-gray-800">
+    <span class="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center text-lg shadow">🔫</span>
+    <div class="leading-tight">
+      <div class="font-bold text-gray-800 dark:text-gray-100">三角洲改枪码</div>
+      <div class="text-[11px] tracking-widest text-gray-400">DELTA FORCE</div>
+    </div>
+    <button id="sidebarClose" class="ml-auto lg:hidden text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xl">&times;</button>
+  </div>
+
+  <!-- Nav -->
+  <nav id="navMenu" class="flex-1 overflow-y-auto py-4 px-3 space-y-1 scrollbar-thin"></nav>
+
+  <!-- Sidebar footer -->
+  <div class="shrink-0 p-4 border-t border-gray-200 dark:border-gray-800 text-[11px] text-gray-400 leading-relaxed">
+    <p>共 <strong id="totalCount" class="text-indigo-500">0</strong> 把武器</p>
+    <p><strong id="newCount" class="text-red-500">0</strong> 把最近更新</p>
+  </div>
+</aside>
+
+<!-- ============== Content wrapper ============== -->
+<div class="lg:ml-64 min-h-screen flex flex-col">
+
+<!-- Top bar -->
+<header class="sticky top-0 z-30 bg-gray-50/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
+  <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <button id="sidebarOpen" class="lg:hidden text-gray-600 dark:text-gray-300 text-xl p-1 -ml-1">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <h1 class="text-lg sm:text-xl font-bold">烽火地带<span class="text-indigo-600">改枪码</span></h1>
+    </div>
+    <span class="text-xs text-gray-400 hidden sm:block">每日更新 · 一键复制</span>
+  </div>
+</header>
+
+<main class="w-full max-w-5xl mx-auto p-4 lg:p-6 space-y-6 scrollbar-thin flex-1">
+
+  <!-- ============== Random Weapon ============== -->
+  <section class="bg-white/90 dark:bg-gray-900/90 backdrop-blur-md p-4 rounded-lg shadow">
+    <header class="mb-3 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-800 text-emerald-700 dark:text-white">🎯</span>
+        <h3 class="text-lg font-bold tracking-wide text-emerald-700 dark:text-emerald-200">随机武器</h3>
+      </div>
+      <span class="hidden sm:inline-block text-xs px-2 py-1 rounded bg-emerald-50 dark:bg-emerald-800 text-emerald-700 dark:text-emerald-100">随机抽一把</span>
+    </header>
+    <div class="flex flex-col gap-4 py-2">
+      <div id="slot" class="border border-gray-300 dark:border-indigo-500/40 rounded-xl p-4 bg-white dark:bg-gray-800 text-center text-xl font-semibold min-h-[64px] flex items-center justify-center text-gray-700 dark:text-gray-200 slot">— 点击下方按钮开始 —</div>
+      <div class="flex items-center justify-center gap-3">
+        <button id="rngBtn" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition disabled:opacity-60 disabled:cursor-not-allowed">
+          <i class="fa-solid fa-shuffle"></i>开始随机
+        </button>
+      </div>
+      <div class="text-xs text-gray-500 dark:text-gray-400 text-center">提示：点按钮开始滚动，约 2 秒出结果</div>
+    </div>
+  </section>
+
+  <!-- ============== Search + Category Filter ============== -->
+  <section class="space-y-3">
+    <div class="relative">
+      <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+      <input id="searchInput" type="text" placeholder="搜索武器名 / 描述 / 分类 / 改枪码…"
+             class="w-full pl-10 pr-10 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition" />
+      <button id="searchClear" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="flex flex-wrap gap-2" id="filters"></div>
+  </section>
+
+  <!-- ============== Weapon Cards Grid ============== -->
+  <section>
+    <div id="weaponGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+  </section>
+
+</main>
+
+<footer class="bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-t dark:border-gray-700 mt-6">
+  <div class="max-w-screen-xl w-full mx-auto px-4 py-6 text-sm text-center space-y-2">
+    <p>本站为limerence私人改枪码汇总，所有内容仅供菜鸡队友使用。</p>
+    <p>© 2026 三角洲改枪码分享站</p>
+  </div>
+</footer>
+
+</div><!-- /content wrapper -->
+
+<!-- Weapon Detail Modal -->
+<div id="detailModal" class="modal-back">
+  <div class="modal-card overflow-hidden">
+    <!-- Hero header -->
+    <div class="relative bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
+      <button id="detailClose" class="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/30 hover:bg-black/50 text-white text-lg leading-none flex items-center justify-center z-10">&times;</button>
+      <div class="px-6 py-8 text-center">
+        <div id="detailEmoji" class="text-6xl mb-2">🔫</div>
+        <div class="text-xs uppercase tracking-widest opacity-80" id="detailCat">步枪</div>
+        <div class="text-2xl lg:text-3xl font-bold mt-1" id="detailName">M4A1</div>
+        <button class="mt-3 text-xs px-3 py-1.5 rounded bg-white/20 hover:bg-white/30 transition">
+          <i class="fa-solid fa-share-nodes mr-1"></i>分享你的改枪码
+        </button>
+      </div>
+    </div>
+
+    <!-- Description + meta -->
+    <div class="px-5 pt-4 pb-2 text-sm text-gray-600 dark:text-gray-400 flex items-center justify-between gap-3 flex-wrap">
+      <span id="detailDesc">武器描述</span>
+      <span class="text-xs"><i class="fa-regular fa-clock mr-1"></i>最近更新：<span id="detailUpdated">--</span></span>
+    </div>
+
+    <!-- Mod code table -->
+    <div class="px-5 pb-5">
+      <h3 class="text-base lg:text-lg font-semibold text-indigo-600 dark:text-indigo-300 mb-3">
+        改枪码 · 共 <span id="detailCount">0</span> 套
+      </h3>
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[640px] table-auto border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden text-sm">
+          <thead class="bg-indigo-50 dark:bg-gray-800 text-indigo-700 dark:text-indigo-200 font-semibold">
+            <tr>
+              <th class="border border-gray-200 dark:border-gray-700 px-4 py-2 text-left whitespace-nowrap">改枪码</th>
+              <th class="border border-gray-200 dark:border-gray-700 px-4 py-2 whitespace-nowrap text-center">描述</th>
+              <th class="border border-gray-200 dark:border-gray-700 px-4 py-2 whitespace-nowrap text-center">价值</th>
+              <th class="border border-gray-200 dark:border-gray-700 px-4 py-2 text-center">操作</th>
+            </tr>
+          </thead>
+          <tbody id="detailTbody" class="bg-white dark:bg-gray-900 divide-y divide-gray-100 dark:divide-gray-800"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Related weapons -->
+    <div class="bg-gray-50 dark:bg-gray-800/50 px-5 py-4 border-t border-gray-200 dark:border-gray-700">
+      <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">同分类其他枪械</h4>
+      <div id="relatedWeapons" class="flex flex-wrap gap-2"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<script>
+/* ============================================================
+   DATA  ← 在这里修改你的内容
+   updatedAt: 'YYYY-MM-DD'  日期越近排序越靠前，7天内显示 NEW 徽章
+   ============================================================ */
+
+const categories = ['全部', '冲锋枪', '手枪', '步枪', '特殊武器', '狙击步枪', '精确射手步枪', '轻机枪', '霰弹枪'];
+
+// 导航栏页签（目前仅“烽火地带改枪码”可用，其余敬请期待）
+const navTabs = [
+  { id: 'fenghuo',  label: '烽火地带改枪码', icon: 'fa-solid fa-crosshairs', active: true },
+  { id: 'anchor',   label: '主播同款改枪码', icon: 'fa-solid fa-video',     soon: true },
+  { id: 'map',      label: '官方地图工具',   icon: 'fa-solid fa-map',       soon: true },
+  { id: 'craft',    label: '特勤处制造利润', icon: 'fa-solid fa-industry',  soon: true },
+  { id: 'loadout',  label: '卡战备系统',     icon: 'fa-solid fa-box-open',  soon: true },
+  { id: 'price',    label: '价格走势图',     icon: 'fa-solid fa-chart-line',soon: true },
+  { id: 'tools',    label: '小工具/小游戏',  icon: 'fa-solid fa-dice',      soon: true },
+];
+
+// 全部 65 把武器（参考站完整清单）
+const weapons = [
+  // ===== 冲锋枪 (12) =====
+  { name: 'QCQ171',     cat: '冲锋枪',   img: '🔫', desc: '国产 9mm 冲锋枪，低倍镜腰射利器', updatedAt: '2026-06-13',
+    codes: [ { code: '6GV4DOS03I0RFPFTOIP1D', desc: '低倍腰射', tag: '推荐', value: '20W' }, { code: '6HQCQX5008JK8B8QKQ18K', desc: '高伤害', value: '12W' } ] },
+  { name: 'MP5',        cat: '冲锋枪',   img: '🔫', desc: '经典近战之王', updatedAt: '2026-06-08',
+    codes: [ { code: '6H12MP5008OPOB8QKQ18K', desc: '近战满改', tag: '推荐', value: '18W' }, { code: '6HMP5X2003T9RFPFT9PJ1', desc: '静音打法', value: '10W' } ] },
+  { name: 'MP7',        cat: '冲锋枪',   img: '🔫', desc: '高射速冲锋枪', updatedAt: '2026-05-20',
+    codes: [ { code: '6HMP7V1003T9RFPFT9PJ1', desc: '高射速满改', tag: '推荐', value: '16W' }, { code: '6HMP7X5008OPOB8QKQ72I', desc: '腰射版', value: '9W' } ] },
+  { name: 'Vector',     cat: '冲锋枪',   img: '🔫', desc: '变态射速，近战无敌', updatedAt: '2026-06-12',
+    codes: [ { code: '6GVECTO03I0RFPFTOIP1D', desc: '射速拉满', tag: '推荐', value: '14W' }, { code: '6HVECX5008JK8B8QKQ18K', desc: '稳压版', value: '8W' } ] },
+  { name: 'UZI',        cat: '冲锋枪',   img: '🔫', desc: '泼水神器', updatedAt: '2026-04-15',
+    codes: [ { code: '6GUZI99008JK8B8QKQ18K', desc: '泼水流', value: '6W' } ] },
+  { name: 'P90',        cat: '冲锋枪',   img: '🔫', desc: '大容量弹匣', updatedAt: '2026-05-30',
+    codes: [ { code: '6HP90X5008OPOB8QKQ72I', desc: '满改', tag: '推荐', value: '12W' }, { code: '6HP90CL03T9RFPFT9PJ1', desc: '腰射流', value: '7W' } ] },
+  { name: '勇士冲锋枪', cat: '冲锋枪',   img: '🔫', desc: 'PP-19，便宜好用', updatedAt: '2026-03-22',
+    codes: [ { code: '6HPP19V203T9RFPFT9PJ1', desc: '满改', value: '5W' } ] },
+  { name: '野牛冲锋枪',      cat: '冲锋枪',   img: '🔫', desc: '64 发大弹鼓，冲锋压制', updatedAt: '2026-06-05',
+    codes: [ { code: '6HBIZONX5008JK8B8QKQ18', desc: '弹鼓满改', value: '11W' }, { code: '6HBIZONV1003T9RFPFT9PJ1', desc: '腰射版', value: '6W' } ] },
+  { name: 'AKS-74U',    cat: '步枪',     img: '🔫', desc: '短管 AK，冲锋/突击两用', updatedAt: '2026-05-18',
+    codes: [ { code: '6HAKSU74X5008JK8B8QKQ18', desc: '满改', value: '9W' } ] },
+  { name: 'SMG-45',     cat: '冲锋枪',   img: '🔫', desc: '.45 口径冲锋枪', updatedAt: '2026-04-28',
+    codes: [ { code: '6HSMG45X5003T9RFPFT9PJ1', desc: '满改', value: '8W' } ] },
+  { name: 'SR-3M',      cat: '冲锋枪',   img: '🔫', desc: '俄制紧凑突击冲锋', updatedAt: '2026-06-02',
+    codes: [ { code: '6HSR3MX5008OPOB8QKQ72I', desc: '消音满改', value: '10W' } ] },
+
+  // ===== 手枪 (7) =====
+  { name: 'M1911',         cat: '手枪', img: '🔪', desc: '经典 .45 半自动手枪', updatedAt: '2026-05-25',
+    codes: [ { code: '6HM1911X008JK8B8QKQ18', desc: '满改', value: '4W' } ] },
+  { name: '.357左轮',      cat: '手枪', img: '🔪', desc: '西部牛仔风左轮', updatedAt: '2026-04-10',
+    codes: [ { code: '6H357X1003T9RFPFT9PJ1', desc: '左轮原版', value: '3W' } ] },
+  { name: 'G17',           cat: '手枪', img: '🔪', desc: '稳定可靠的 9mm 手枪', updatedAt: '2026-06-11',
+    codes: [ { code: '6HG17X5008OPOB8QKQ72I', desc: '满改', tag: '推荐', value: '5W' }, { code: '6HG17V1003I0RFPFTOIP1', desc: '快拔版', value: '3W' } ] },
+  { name: 'G18',           cat: '手枪', img: '🔪', desc: 'G17 全自动版', updatedAt: '2026-05-12',
+    codes: [ { code: '6HG18X5008JK8B8QKQ18K', desc: '全自动满改', value: '6W' } ] },
+  { name: '沙漠之鹰',      cat: '手枪', img: '🔪', desc: '大口径半自动手枪，威力恐怖', updatedAt: '2026-06-15',
+    codes: [ { code: '6GDE001V208OPOB8QKQ72I', desc: '高伤害满改', tag: '热门', value: '11W' }, { code: '6GDE002V1003T9RFPFT9PJ1', desc: '消音版', value: '18W' }, { code: '6GDE003V508JK8B8QKQ18K', desc: '腰射版', value: '6W' } ] },
+  { name: '93R',           cat: '手枪', img: '🔪', desc: '三连发手枪', updatedAt: '2026-05-08',
+    codes: [ { code: '6H93RX5003T9RFPFT9PJ1', desc: '三连发满改', value: '5W' } ] },
+  { name: 'QSZ92G',        cat: '手枪', img: '🔪', desc: '国产 92 式手枪', updatedAt: '2026-04-22',
+    codes: [ { code: '6HQSZ92X5008JK8B8QKQ18', desc: '满改', value: '4W' } ] },
+
+  // ===== 步枪 (22) =====
+  { name: 'M4A1',          cat: '步枪', img: '🔫', desc: '万金油步枪，新手到老兵都通用', updatedAt: '2026-06-15',
+    codes: [ { code: '6HA2CN003T9RFPFT9PJ1K', desc: '中远距满改', tag: '推荐', value: '32W' }, { code: '6HM4CL1003T9RFPFT9PJ1', desc: '近战腰射 CQB', value: '18W' }, { code: '6HM4LT2008JK8B8QKQ18K', desc: '静音消音', tag: '热门', value: '24W' } ] },
+  { name: 'AKM',           cat: '步枪', img: '🔫', desc: '经典怀旧，老兵之选', updatedAt: '2026-05-15',
+    codes: [ { code: '6G9M3K005OPOB8QKQ72I8', desc: '经典满改', value: '22W' }, { code: '6HAKMX2003I0RFPFTOIP1', desc: '低后坐版本', value: '14W' } ] },
+  { name: 'K416',          cat: '步枪', img: '🔫', desc: '稳如老狗，中距强势', updatedAt: '2026-06-09',
+    codes: [ { code: '6H73D9003I0RFPFTOIP1D', desc: '稳压流', tag: '推荐', value: '28W' }, { code: '6HK416V2008JK8B8QKQ18', desc: '高射速', value: '16W' } ] },
+  { name: 'AUG',           cat: '步枪', img: '🔫', desc: '自带倍镜，开镜即战', updatedAt: '2026-06-14',
+    codes: [ { code: '6GE37N00EA3FRKHMS9J6U', desc: '中远距满改', tag: '推荐', value: '30W' }, { code: '6HAUGX5003T9RFPFT9PJ1', desc: '低倍镜速射', value: '17W' } ] },
+  { name: 'AK-12',         cat: '步枪', img: '🔫', desc: '俄制现代化 AK', updatedAt: '2026-06-01',
+    codes: [ { code: '6HAK12X5008OPOB8QKQ72I', desc: '满改', tag: '推荐', value: '24W' } ] },
+  { name: 'AR57',          cat: '步枪', img: '🔫', desc: '5.56 口径 AR 系', updatedAt: '2026-05-22',
+    codes: [ { code: '6HAR57X5003T9RFPFT9PJ1', desc: '满改', value: '18W' } ] },
+  { name: 'AS Val',        cat: '步枪', img: '🔫', desc: '俄制消音突击步枪', updatedAt: '2026-06-06',
+    codes: [ { code: '6HASVALX5008JK8B8QKQ18', desc: '消音满改', tag: '热门', value: '26W' } ] },
+  { name: 'CAR-15',        cat: '步枪', img: '🔫', desc: 'M4 紧凑变体', updatedAt: '2026-05-28',
+    codes: [ { code: '6HCAR15X5003T9RFPFT9PJ1', desc: '满改', value: '15W' } ] },
+  { name: 'G3',            cat: '步枪', img: '🔫', desc: '德制 7.62 全威力步枪', updatedAt: '2026-04-25',
+    codes: [ { code: '6HG3X5008OPOB8QKQ72I', desc: '满改', value: '20W' } ] },
+  { name: 'M16A4',         cat: '步枪', img: '🔫', desc: '经典三连发步枪', updatedAt: '2026-06-04',
+    codes: [ { code: '6HM16A4X5008JK8B8QKQ18', desc: '三连发满改', value: '19W' } ] },
+  { name: 'M7',            cat: '步枪', img: '🔫', desc: '现代战斗步枪', updatedAt: '2026-06-11',
+    codes: [ { code: '6HM7X5003T9RFPFT9PJ1', desc: '满改', value: '21W' } ] },
+  { name: 'MCX LT',        cat: '步枪', img: '🔫', desc: '西格绍尔 MCX 轻型版', updatedAt: '2026-05-19',
+    codes: [ { code: '6HMCXLX5008OPOB8QKQ72I', desc: '满改', value: '17W' } ] },
+  { name: 'MK47',          cat: '步枪', img: '🔫', desc: '7.62 半自动步枪', updatedAt: '2026-06-07',
+    codes: [ { code: '6HMK47X5008JK8B8QKQ18', desc: '满改', value: '16W' } ] },
+  { name: 'QBZ95-1',       cat: '步枪', img: '🔫', desc: '国产 95 式步枪', updatedAt: '2026-06-03',
+    codes: [ { code: '6HQBZ95X5003T9RFPFT9PJ1', desc: '满改', tag: '推荐', value: '22W' } ] },
+  { name: 'RM277',         cat: '步枪', img: '🔫', desc: '未来概念步枪', updatedAt: '2026-05-26',
+    codes: [ { code: '6HRM277X5008OPOB8QKQ72I', desc: '满改', value: '23W' } ] },
+  { name: 'SCAR-H',        cat: '步枪', img: '🔫', desc: 'FN SCAR 重型步枪', updatedAt: '2026-06-13',
+    codes: [ { code: '6HSCARHX5008JK8B8QKQ18', desc: '满改', value: '25W' } ] },
+  { name: 'SG552',         cat: '步枪', img: '🔫', desc: '西格绍尔 SG552', updatedAt: '2026-05-21',
+    codes: [ { code: '6HSG552X5003T9RFPFT9PJ1', desc: '满改', value: '14W' } ] },
+  { name: 'PTR-32',        cat: '步枪', img: '🔫', desc: '7.62 半自动民用步枪', updatedAt: '2026-04-18',
+    codes: [ { code: '6HPTR32X5008OPOB8QKQ72I', desc: '满改', value: '13W' } ] },
+  { name: 'K437',          cat: '步枪', img: '🔫', desc: '紧凑型突击步枪', updatedAt: '2026-06-10',
+    codes: [ { code: '6HK437X5008OPOB8QKQ72I', desc: '满改', tag: '推荐', value: '13W' } ] },
+  { name: 'KC17',          cat: '步枪', img: '🔫', desc: '高射速突击步枪，纯粑粑配件好压', updatedAt: '2026-06-15',
+    codes: [ { code: '6HH8PD802AMR3AEE8LQVJ', desc: '纯粑粑配件', tag: '热门', value: '25W' }, { code: '6HKC17X5003I0RFPFTOIP1', desc: '稳压流', value: '15W' } ] },
+  { name: 'ASh-12',        cat: '步枪', img: '💥', desc: '.50 BMG 大口径突击步枪，火力压制', updatedAt: '2026-06-12',
+    codes: [ { code: '6GE37N00EA3FRKHMS9J6U', desc: '重枪满改', tag: '热门', value: '43W' }, { code: '6HASH12X5008OPOB8QKQ72', desc: '穿甲流', value: '25W' } ] },
+  { name: '腾龙突击步枪',  cat: '步枪', img: '🔫', desc: '国产 7.62 突击步枪', updatedAt: '2026-06-15',
+    codes: [ { code: '6HTLXXXXX008OPOB8QKQ72I', desc: '满改', value: '15W' } ] },
+
+  // ===== 精确射手步枪 (9) =====
+  { name: 'SKS',           cat: '精确射手步枪', img: '🎯', desc: '半自动连狙', updatedAt: '2026-05-30',
+    codes: [ { code: '6HSKSY9008JK8B8QKQ18K', desc: '连狙满改', tag: '推荐', value: '18W' }, { code: '6HSKSX5003T9RFPFT9PJ1', desc: '低倍镜', value: '10W' } ] },
+  { name: 'SR-25',         cat: '精确射手步枪', img: '🎯', desc: '半自动精准', updatedAt: '2026-06-05',
+    codes: [ { code: '6HSR25X003T9RFPFT9PJ1', desc: '满改', tag: '推荐', value: '22W' }, { code: '6HSR25V2008OPOB8QKQ72', desc: '轻量化', value: '13W' } ] },
+  { name: 'VSS',           cat: '精确射手步枪', img: '🎯', desc: '消音连狙', updatedAt: '2026-06-10',
+    codes: [ { code: '6HVSSX5003I0RFPFTOIP1', desc: '消音满改', tag: '推荐', value: '19W' }, { code: '6HVSSV1008JK8B8QKQ18K', desc: '高穿甲', value: '12W' } ] },
+  { name: 'M14',           cat: '精确射手步枪', img: '🎯', desc: '经典 DMR', updatedAt: '2026-05-23',
+    codes: [ { code: '6HM14X5008JK8B8QKQ18', desc: 'DMR 满改', value: '17W' } ] },
+  { name: 'Mini-14',       cat: '精确射手步枪', img: '🎯', desc: '鲁格 Mini-14 半自动', updatedAt: '2026-04-30',
+    codes: [ { code: '6HMINI14X5003T9RFPFT9PJ1', desc: '满改', value: '14W' } ] },
+  { name: 'Marlin',        cat: '精确射手步枪', img: '🎯', desc: '杠杆式步枪', updatedAt: '2026-05-15',
+    codes: [ { code: '6HMARLINX5008OPOB8QKQ72I', desc: '杠杆满改', value: '13W' } ] },
+  { name: 'SVD',           cat: '精确射手步枪', img: '🎯', desc: '德拉贡诺夫狙击步枪', updatedAt: '2026-06-11',
+    codes: [ { code: '6HSVDX5008OPOB8QKQ72I', desc: '满改', tag: '推荐', value: '20W' } ] },
+  { name: 'PSG-1',         cat: '精确射手步枪', img: '🎯', desc: 'HK PSG-1 半自动 DMR', updatedAt: '2026-06-02',
+    codes: [ { code: '6HPSG1X5008JK8B8QKQ18', desc: '满改', value: '21W' } ] },
+
+  // ===== 狙击步枪 (5) =====
+  { name: 'M700',          cat: '狙击步枪', img: '🎯', desc: '经典栓动狙击', updatedAt: '2026-06-12',
+    codes: [ { code: '6HM700X5008OPOB8QKQ72I', desc: '栓动精准', tag: '推荐', value: '20W' }, { code: '6HM700V1003I0RFPFTOIP1', desc: '速射流', value: '11W' } ] },
+  { name: 'M82',           cat: '狙击步枪', img: '🎯', desc: '反器材大炮', updatedAt: '2026-06-08',
+    codes: [ { code: '6HM82B8003I0RFPFTOIP1', desc: '反器材', tag: '热门', value: '28W' }, { code: '6HM82X5008JK8B8QKQ18K', desc: '轻量化', value: '16W' } ] },
+  { name: 'R93',           cat: '狙击步枪', img: '🎯', desc: '欧洲猎枪', updatedAt: '2026-04-20',
+    codes: [ { code: '6HR93X1008OPOB8QKQ72I', desc: '栓动精准', value: '15W' } ] },
+  { name: 'AWM',           cat: '狙击步枪', img: '🎯', desc: '英制高精度栓狙', updatedAt: '2026-06-14',
+    codes: [ { code: '6HAWMX5008OPOB8QKQ72I', desc: '高精栓动', tag: '热门', value: '26W' } ] },
+  { name: 'SV-98',         cat: '狙击步枪', img: '🎯', desc: '俄制高精度栓狙', updatedAt: '2026-05-28',
+    codes: [ { code: '6HSV98X5003T9RFPFT9PJ1', desc: '高精栓动', value: '18W' } ] },
+  { name: 'SVTH',          cat: '精确射手步枪', img: '🎯', desc: '高精战术栓狙', updatedAt: '2026-05-10',
+    codes: [ { code: '6HSVTHX5008JK8B8QKQ18', desc: '满改', value: '16W' } ] },
+
+  // ===== 霰弹枪 (5) =====
+  { name: 'M1014',         cat: '霰弹枪', img: '💣', desc: '半自动霰弹', updatedAt: '2026-06-15',
+    codes: [ { code: '6G9406008OPOB8QKQ72I8', desc: '快速装填 修脚', tag: '热门', value: '13W' }, { code: '6HM1014X5003T9RFPFT9PJ', desc: '鹿弹流', value: '8W' } ] },
+  { name: 'S12K',          cat: '霰弹枪', img: '💣', desc: '连发霰弹', updatedAt: '2026-05-29',
+    codes: [ { code: '6HS12KX1008JK8B8QKQ18', desc: '连喷满改', tag: '推荐', value: '14W' }, { code: '6HS12KV2003T9RFPFT9PJ1', desc: '速射', value: '7W' } ] },
+  { name: 'M870',          cat: '霰弹枪', img: '💣', desc: '经典泵动', updatedAt: '2026-04-12',
+    codes: [ { code: '6HM870X5003T9RFPFT9PJ', desc: '泵动满改', value: '9W' } ] },
+  { name: '725双管',       cat: '霰弹枪', img: '💣', desc: '双管暴力', updatedAt: '2026-05-05',
+    codes: [ { code: '6H725X1008OPOB8QKQ72I', desc: '双管暴力', value: '11W' } ] },
+  { name: 'FS-12',         cat: '霰弹枪', img: '💣', desc: '半自动连喷', updatedAt: '2026-06-06',
+    codes: [ { code: '6HFS12X5003I0RFPFTOIP1', desc: '半自动满改', tag: '推荐', value: '15W' }, { code: '6HFS12V1008JK8B8QKQ18', desc: '速射流', value: '8W' } ] },
+
+  // ===== 轻机枪 (4) =====
+  { name: 'PKM',           cat: '轻机枪', img: '💥', desc: '机枪压制', updatedAt: '2026-06-04',
+    codes: [ { code: '6HPKMX5003T9RFPFT9PJ1', desc: '机枪满改', tag: '推荐', value: '32W' }, { code: '6HPKMV2008OPOB8QKQ72I', desc: '轻量化', value: '18W' } ] },
+  { name: 'M249',          cat: '轻机枪', img: '💥', desc: '弹链机枪', updatedAt: '2026-05-17',
+    codes: [ { code: '6HM249X008OPOB8QKQ72I', desc: '弹链压制', tag: '热门', value: '28W' } ] },
+  { name: 'M250',          cat: '轻机枪', img: '💥', desc: '勃朗宁 M2 重机枪', updatedAt: '2026-04-26',
+    codes: [ { code: '6HM250X5008JK8B8QKQ18', desc: '重机枪满改', value: '30W' } ] },
+  { name: 'QJB201',        cat: '轻机枪', img: '💥', desc: '国产班用机枪', updatedAt: '2026-06-08',
+    codes: [ { code: '6HQJB201X5008OPOB8QKQ72I', desc: '满改', value: '22W' } ] },
+
+  // ===== 特殊武器 (1) =====
+  { name: '复合弓',         cat: '特殊武器', img: '🏹', desc: '无声暗杀', updatedAt: '2026-04-08',
+    codes: [ { code: '6HBOWX1003I0RFPFTOIP1', desc: '消音精准', value: '4W' } ] },
+  { name: 'MK4',           cat: '冲锋枪', img: '🔫', desc: '实验型武器', updatedAt: '2026-05-13',
+    codes: [ { code: '6HMK4X5008JK8B8QKQ18', desc: '满改', value: '6W' } ] },
+];
+
+/* ============================================================
+   武器图标（参考站官方渲染图，已本地缓存于 assets/weapons/）
+   没有匹配图标的武器自动回退到 w.img 的 emoji
+   ============================================================ */
+const weaponIcons = {
+  'QCQ171': 'assets/weapons/qcq171.webp', 'MP5': 'assets/weapons/mp5.webp', 'MP7': 'assets/weapons/mp7.webp',
+  'Vector': 'assets/weapons/vector.webp', 'UZI': 'assets/weapons/uzi.webp', 'P90': 'assets/weapons/p90.webp',
+  '勇士冲锋枪': 'assets/weapons/pp-19.webp', '野牛冲锋枪': 'assets/weapons/bizon.webp', 'SMG-45': 'assets/weapons/smg-45.webp',
+  'SR-3M': 'assets/weapons/sr-3m.webp', 'MK4': 'assets/weapons/mk4.webp',
+  'M1911': 'assets/weapons/m1911.webp', '.357左轮': 'assets/weapons/357-revolver.webp', 'G17': 'assets/weapons/g17.webp',
+  'G18': 'assets/weapons/g18.webp', '沙漠之鹰': 'assets/weapons/desert-eagle.webp', '93R': 'assets/weapons/93r.webp',
+  'QSZ92G': 'assets/weapons/qsz92g.webp',
+  'M4A1': 'assets/weapons/m4a1.webp', 'AKM': 'assets/weapons/akm.webp', 'K416': 'assets/weapons/k416.webp',
+  'AUG': 'assets/weapons/aug.webp', 'AK-12': 'assets/weapons/ak-12.webp', 'AR57': 'assets/weapons/ar57.webp',
+  'AS Val': 'assets/weapons/as-val.webp', 'CAR-15': 'assets/weapons/car-15.webp', 'G3': 'assets/weapons/g3.webp',
+  'M16A4': 'assets/weapons/m16a4.webp', 'M7': 'assets/weapons/m7.webp', 'MCX LT': 'assets/weapons/mcx-lt.webp',
+  'MK47': 'assets/weapons/mk47.webp', 'QBZ95-1': 'assets/weapons/qbz95-1.webp', 'RM277': 'assets/weapons/rm277.webp',
+  'SCAR-H': 'assets/weapons/scar-h.webp', 'SG552': 'assets/weapons/sg552.webp', 'PTR-32': 'assets/weapons/ptr-32.webp',
+  'K437': 'assets/weapons/k437.webp', 'KC17': 'assets/weapons/kc17.webp', 'ASh-12': 'assets/weapons/ash-12.webp',
+  'AKS-74U': 'assets/weapons/aks-74u.webp', '腾龙突击步枪': 'assets/weapons/tenglong.webp',
+  'SKS': 'assets/weapons/sks.webp', 'SR-25': 'assets/weapons/sr-25.webp', 'VSS': 'assets/weapons/vss.webp',
+  'M14': 'assets/weapons/m14.webp', 'Mini-14': 'assets/weapons/mini-14.webp', 'Marlin': 'assets/weapons/marlin.webp',
+  'SVD': 'assets/weapons/svd.webp', 'PSG-1': 'assets/weapons/psg-1.webp', 'SVTH': 'assets/weapons/svth.webp',
+  'M700': 'assets/weapons/m700.webp', 'M82': 'assets/weapons/m82.webp', 'R93': 'assets/weapons/r93.webp',
+  'AWM': 'assets/weapons/awm.webp', 'SV-98': 'assets/weapons/sv-98.webp',
+  'M1014': 'assets/weapons/m1014.webp', 'S12K': 'assets/weapons/s12k.webp', 'M870': 'assets/weapons/m870.webp',
+  '725双管': 'assets/weapons/725-double-barrel-shotgun.webp', 'FS-12': 'assets/weapons/fs-12.webp',
+  'PKM': 'assets/weapons/pkm.webp', 'M249': 'assets/weapons/m249.webp', 'M250': 'assets/weapons/m250.webp',
+  'QJB201': 'assets/weapons/qjb201.webp',
+  '复合弓': 'assets/weapons/compound-bow.webp',
+};
+function iconMarkup(w, cls) {
+  const src = weaponIcons[w.name];
+  if (src) return `<img src="${src}" alt="${escapeAttr(w.name)}" loading="lazy" class="${cls}" />`;
+  return `<span>${w.img}</span>`;
+}
+
+/* ============================================================
+   STATE & RENDER
+   ============================================================ */
+
+let activeCat = '全部';
+const today = '2026-06-15';
+const NEW_DAYS = 7;
+
+function daysSince(iso) {
+  if (!iso) return Infinity;
+  const d = new Date(iso), t = new Date(today);
+  return Math.round((t - d) / 86400000);
+}
+
+// 按 updatedAt 倒序排（新的在前）
+weapons.sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
+
+document.getElementById('totalCount').textContent = weapons.length;
+document.getElementById('newCount').textContent = weapons.filter(w => daysSince(w.updatedAt) <= NEW_DAYS).length;
+
+// ---- Random weapon
+function setupRandom() {
+  const pool = weapons.map(w => ({ title: w.name, cat: w.cat }));
+  const slot = document.getElementById('slot');
+  const btn = document.getElementById('rngBtn');
+
+  btn.addEventListener('click', () => {
+    if (!pool.length) return;
+    btn.disabled = true;
+    slot.classList.remove('final');
+    const start = Date.now();
+    const spinMs = 2000;
+    slot.textContent = `${pick(pool).title} (${pick(pool).cat})`;
+    const timer = setInterval(() => {
+      const x = pick(pool);
+      slot.textContent = `${x.title} (${x.cat})`;
+      if (Date.now() - start >= spinMs) {
+        clearInterval(timer);
+        const final = pick(pool);
+        slot.textContent = `${final.title} (${final.cat})`;
+        slot.classList.add('final');
+        btn.disabled = false;
+      }
+    }, 90);
+  });
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+}
+
+// ---- Sidebar navigation
+function renderNav() {
+  const nav = document.getElementById('navMenu');
+  nav.innerHTML = navTabs.map(t => {
+    if (t.active) {
+      return `<button class="nav-item nav-active" data-tab="${t.id}">
+        <i class="${t.icon}"></i><span>${escapeHtml(t.label)}</span>
+      </button>`;
+    }
+    return `<div class="nav-item nav-disabled" title="敬请期待">
+      <i class="${t.icon}"></i><span>${escapeHtml(t.label)}</span>
+      <span class="nav-soon">敬请期待</span>
+    </div>`;
+  }).join('');
+}
+
+// ---- Sidebar open/close (mobile)
+function setupSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const open = () => { sidebar.classList.remove('-translate-x-full'); overlay.classList.remove('hidden'); };
+  const close = () => { sidebar.classList.add('-translate-x-full'); overlay.classList.add('hidden'); };
+  document.getElementById('sidebarOpen').addEventListener('click', open);
+  document.getElementById('sidebarClose').addEventListener('click', close);
+  overlay.addEventListener('click', close);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+}
+
+// ---- Category filter
+function renderFilters() {
+  document.getElementById('filters').innerHTML = categories.map(c =>
+    `<button class="pill ${c === activeCat ? 'pill-on' : 'pill-off'}" data-cat="${escapeAttr(c)}">${escapeHtml(c)}</button>`
+  ).join('');
+  document.querySelectorAll('#filters .pill').forEach(b => {
+    b.addEventListener('click', () => {
+      activeCat = b.dataset.cat;
+      renderFilters();
+      renderGrid();
+    });
+  });
+}
+
+// ---- Weapon grid
+function renderGrid() {
+  const q = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
+  const list = weapons
+    .map((w, idx) => ({ w, idx }))
+    .filter(({ w }) => activeCat === '全部' || w.cat === activeCat)
+    .filter(({ w }) => {
+      if (!q) return true;
+      const haystack = [
+        w.name, w.cat, w.desc || '',
+        ...(w.codes || []).flatMap(c => [c.code, c.desc || '', c.tag || ''])
+      ].join(' ').toLowerCase();
+      return haystack.includes(q);
+    });
+
+  document.getElementById('weaponGrid').innerHTML = list.map(({ w, idx }) => {
+    const isNew = daysSince(w.updatedAt) <= NEW_DAYS;
+    return `
+    <div class="weapon-card bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden relative" data-idx="${idx}">
+      <div class="relative h-32 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center text-6xl p-3">
+        ${iconMarkup(w, 'max-h-24 max-w-[85%] object-contain drop-shadow-md')}
+        ${isNew ? `<span class="badge-new absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded shadow">NEW</span>` : ''}
+        <span class="absolute top-2 right-2 bg-indigo-600 text-white text-xs px-2 py-1 rounded font-semibold">
+          ${w.codes.length} 套
+        </span>
+      </div>
+      <div class="p-4 flex items-center justify-between gap-2">
+        <div class="min-w-0">
+          <div class="text-base font-bold text-gray-800 dark:text-gray-100 truncate">${escapeHtml(w.name)}</div>
+          <span class="inline-block mt-1 text-xs px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 font-medium">${escapeHtml(w.cat)}</span>
+        </div>
+        <i class="fa-solid fa-chevron-right text-gray-400 text-sm shrink-0"></i>
+      </div>
+    </div>`;
+  }).join('') || `<div class="col-span-full text-center py-12 text-gray-400">没有匹配的武器</div>`;
+}
+
+// ---- Weapon detail modal
+function openDetail(idx) {
+  const w = weapons[idx];
+  if (!w) return;
+  document.getElementById('detailEmoji').innerHTML = iconMarkup(w, 'h-24 mx-auto object-contain drop-shadow-lg');
+  document.getElementById('detailCat').textContent = w.cat;
+  document.getElementById('detailName').textContent = w.name;
+  document.getElementById('detailDesc').textContent = w.desc || '';
+  document.getElementById('detailCount').textContent = w.codes.length;
+  document.getElementById('detailUpdated').textContent = w.updatedAt || '—';
+
+  // Keep code order as defined
+  const codes = w.codes;
+
+  document.getElementById('detailTbody').innerHTML = codes.map((c, i) => `
+    <tr class="hover:bg-indigo-50/70 dark:hover:bg-gray-800 transition">
+      <td class="border border-gray-200 dark:border-gray-700 px-4 py-2">
+        <div class="flex items-center gap-2">
+          <code class="code-mono text-indigo-600 dark:text-green-400 break-all">${escapeHtml(c.code)}</code>
+          <button class="copy-btn shrink-0 inline-flex items-center justify-center w-7 h-7 rounded border border-indigo-200 dark:border-indigo-700 hover:bg-indigo-600 hover:text-white text-indigo-700 dark:text-indigo-300 transition" data-copy="${escapeAttr(c.code)}" title="复制">
+            <i class="fa-regular fa-copy text-xs"></i>
+          </button>
+        </div>
+      </td>
+      <td class="border border-gray-200 dark:border-gray-700 px-4 py-2 text-center text-gray-700 dark:text-gray-300">
+        ${c.tag ? `<span class="text-xs px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-800 text-indigo-700 dark:text-indigo-200 font-semibold mr-1">${escapeHtml(c.tag)}</span>` : ''}
+        <span class="text-sm">${escapeHtml(c.desc || '')}</span>
+      </td>
+      <td class="border border-gray-200 dark:border-gray-700 px-4 py-2 text-center text-gray-700 dark:text-gray-300 whitespace-nowrap">${escapeHtml(c.value || '—')}</td>
+      <td class="border border-gray-200 dark:border-gray-700 px-4 py-2 text-center whitespace-nowrap">
+        <button class="copy-btn inline-flex items-center gap-1 text-xs px-2 py-1 rounded border border-indigo-200 dark:border-indigo-700 hover:bg-indigo-600 hover:text-white text-indigo-700 dark:text-indigo-300 transition" data-copy="${escapeAttr(c.code)}">
+          <i class="fa-regular fa-copy"></i> 复制
+        </button>
+      </td>
+    </tr>
+  `).join('');
+
+  // Related weapons (same category, exclude self)
+  const related = weapons.filter(x => x.cat === w.cat && x.name !== w.name).slice(0, 8);
+  document.getElementById('relatedWeapons').innerHTML = related.map(r => `
+    <button class="related-pill text-xs px-3 py-1.5 rounded-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-300 transition" data-idx="${weapons.indexOf(r)}">
+      ${escapeHtml(r.name)}
+    </button>
+  `).join('');
+
+  document.getElementById('detailModal').classList.add('on');
+}
+function closeDetail() {
+  document.getElementById('detailModal').classList.remove('on');
+}
+document.getElementById('detailClose').addEventListener('click', closeDetail);
+document.getElementById('detailModal').addEventListener('click', e => {
+  if (e.target.id === 'detailModal') closeDetail();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeDetail();
+});
+
+// ---- Search
+function setupSearch() {
+  const input = document.getElementById('searchInput');
+  const clear = document.getElementById('searchClear');
+  if (!input) return;
+  const toggleClear = () => clear.classList.toggle('hidden', !input.value);
+  input.addEventListener('input', () => { toggleClear(); renderGrid(); });
+  clear.addEventListener('click', () => { input.value = ''; toggleClear(); renderGrid(); input.focus(); });
+}
+
+/* ============================================================
+   COPY + TOAST + CARD CLICK
+   ============================================================ */
+function bindCopy() {
+  document.body.addEventListener('click', async e => {
+    const btn = e.target.closest('[data-copy]');
+    if (!btn) return;
+    const text = btn.dataset.copy;
+    try {
+      await navigator.clipboard.writeText(text);
+      if (btn.classList.contains('copy-btn')) {
+        const orig = btn.innerHTML;
+        btn.classList.add('copied');
+        btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+        setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = orig; }, 1500);
+      } else {
+        toast('改枪码已复制');
+      }
+    } catch (err) {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      toast('改枪码已复制');
+    }
+  });
+
+  // Card click → open detail (unless clicking copy button or related pill)
+  document.getElementById('weaponGrid').addEventListener('click', e => {
+    if (e.target.closest('[data-copy]')) return;
+    const card = e.target.closest('.weapon-card');
+    if (!card) return;
+    openDetail(parseInt(card.dataset.idx, 10));
+  });
+
+  // Related weapon pill → open that weapon
+  document.getElementById('relatedWeapons').addEventListener('click', e => {
+    const pill = e.target.closest('.related-pill');
+    if (!pill) return;
+    openDetail(parseInt(pill.dataset.idx, 10));
+  });
+}
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+/* ============================================================
+   DARK MODE
+   ============================================================ */
+function setupDark() {
+  const html = document.documentElement;
+  const icon = document.getElementById('themeIcon');
+  function refresh() { icon.textContent = html.classList.contains('dark') ? '☀️' : '🌙'; }
+  refresh();
+  document.getElementById('toggleDark').addEventListener('click', () => {
+    html.classList.toggle('dark');
+    localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
+    refresh();
+  });
+}
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function escapeAttr(s) { return escapeHtml(s).replace(/\n/g, ' '); }
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+renderNav();
+setupSidebar();
+setupRandom();
+renderFilters();
+renderGrid();
+setupSearch();
+bindCopy();
+setupDark();
+</script>
+</body>
+</html>
