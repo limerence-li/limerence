@@ -17,13 +17,30 @@
 </head>
 <body class="text-gray-800">
 
+<!-- 登录锁屏 -->
+<div id="lock" class="fixed inset-0 z-50 bg-gray-900/95 flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
+    <div class="text-center">
+      <div class="text-4xl mb-2">🔒</div>
+      <h2 class="text-lg font-bold">后台管理登录</h2>
+      <p class="text-sm text-gray-500 mt-1">请输入管理员密码后进入</p>
+    </div>
+    <input id="lockPw" type="password" placeholder="管理员密码" class="inp" autocomplete="current-password" />
+    <button id="lockBtn" class="btn bg-indigo-600 text-white hover:bg-indigo-700 w-full justify-center"><i class="fa-solid fa-right-to-bracket"></i>登录</button>
+    <p id="lockMsg" class="text-sm text-center hidden"></p>
+    <a href="index.html" class="block text-center text-xs text-gray-400 hover:text-gray-600">← 返回网站首页</a>
+  </div>
+</div>
+
+<div id="app" class="hidden">
 <header class="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-gray-200">
   <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
     <h1 class="text-lg font-bold">改枪码后台<span class="text-indigo-600">管理</span></h1>
     <div class="flex items-center gap-2 flex-wrap">
-      <input id="pw" type="password" placeholder="管理员密码" class="inp" style="width:160px" />
+      <span class="text-xs text-emerald-600 inline-flex items-center gap-1"><i class="fa-solid fa-circle-check"></i>已登录</span>
       <button id="loadBtn" class="btn bg-gray-100 text-gray-700 hover:bg-gray-200"><i class="fa-solid fa-rotate"></i>重新加载</button>
       <button id="saveBtn" class="btn bg-indigo-600 text-white hover:bg-indigo-700"><i class="fa-solid fa-floppy-disk"></i>保存全部</button>
+      <button id="logoutBtn" class="btn bg-white border border-gray-300 text-gray-600 hover:bg-gray-50"><i class="fa-solid fa-right-from-bracket"></i>退出</button>
       <a href="index.html" class="btn bg-white border border-gray-300 text-gray-600 hover:bg-gray-50"><i class="fa-solid fa-arrow-up-right-from-square"></i>查看网站</a>
     </div>
   </div>
@@ -40,6 +57,7 @@
     <button id="addBtn2" class="btn bg-emerald-600 text-white hover:bg-emerald-700"><i class="fa-solid fa-plus"></i>新增武器</button>
   </div>
 </main>
+</div><!-- /#app -->
 
 <template id="weaponTpl">
   <div class="weapon bg-white rounded-xl border border-gray-200 shadow-sm">
@@ -83,7 +101,9 @@
 <script>
 const API_WEAPONS = '/api/weapons';
 const API_SAVE = '/api/save-weapons';
+const API_LOGIN = '/api/login';
 let categories = ['全部','冲锋枪','手枪','步枪','特殊武器','狙击步枪','精确射手步枪','轻机枪','霰弹枪'];
+let adminPw = '';
 
 const $ = (s, el=document) => el.querySelector(s);
 const $$ = (s, el=document) => [...el.querySelectorAll(s)];
@@ -197,30 +217,84 @@ async function load() {
 }
 
 async function save() {
-  const password = $('#pw').value;
-  if (!password) { showStatus('请输入管理员密码', 'error'); $('#pw').focus(); return; }
+  if (!adminPw) { showStatus('登录已失效，请重新登录', 'error'); logout(); return; }
   const weapons = collect();
   showStatus('保存中…');
   try {
     const res = await fetch(API_SAVE, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password, weapons })
+      body: JSON.stringify({ password: adminPw, weapons })
     });
     const data = await res.json();
+    if (res.status === 401) { showStatus('密码已变更，请重新登录', 'error'); logout(); return; }
     if (!res.ok) { showStatus('保存失败：' + (data.error || res.status), 'error'); return; }
-    showStatus(`保存成功！已写入 ${data.count} 把武器，网站约 1 分钟内更新。`, 'success');
+    showStatus(`保存成功！已写入 ${data.count} 把武器，刷新网站即可看到更新。`, 'success');
   } catch (e) {
     showStatus('保存失败：' + e.message, 'error');
   }
 }
 
+/* ---------- 登录 ---------- */
+function lockMsg(msg, type='error') {
+  const el = $('#lockMsg');
+  el.classList.remove('hidden');
+  el.className = `text-sm text-center ${type === 'error' ? 'text-red-600' : 'text-gray-500'}`;
+  el.textContent = msg;
+}
+
+async function doLogin(pw) {
+  if (!pw) { lockMsg('请输入密码'); return; }
+  lockMsg('验证中…', 'info');
+  $('#lockBtn').disabled = true;
+  try {
+    const res = await fetch(API_LOGIN, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pw })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) { lockMsg(data.error || '密码错误'); $('#lockBtn').disabled = false; return; }
+    adminPw = pw;
+    sessionStorage.setItem('adminPw', pw);
+    enterApp();
+  } catch (e) {
+    lockMsg('登录失败：' + e.message);
+    $('#lockBtn').disabled = false;
+  }
+}
+
+function enterApp() {
+  $('#lock').classList.add('hidden');
+  $('#app').classList.remove('hidden');
+  load();
+}
+
+function logout() {
+  adminPw = '';
+  sessionStorage.removeItem('adminPw');
+  $('#app').classList.add('hidden');
+  $('#lock').classList.remove('hidden');
+  $('#lockBtn').disabled = false;
+  $('#lockPw').value = '';
+  $('#lockMsg').classList.add('hidden');
+  $('#lockPw').focus();
+}
+
+$('#lockBtn').addEventListener('click', () => doLogin($('#lockPw').value));
+$('#lockPw').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin($('#lockPw').value); });
+$('#logoutBtn').addEventListener('click', logout);
 $('#loadBtn').addEventListener('click', load);
 $('#saveBtn').addEventListener('click', save);
 $('#addBtn').addEventListener('click', () => addWeaponCard({}, true).scrollIntoView({behavior:'smooth', block:'center'}));
 $('#addBtn2').addEventListener('click', () => addWeaponCard({}));
 
-load();
+// 本会话已登录过则自动进入（关闭浏览器后失效）
+(function init() {
+  const saved = sessionStorage.getItem('adminPw');
+  if (saved) { adminPw = saved; enterApp(); }
+  else { $('#lockPw').focus(); }
+})();
 </script>
 </body>
 </html>
