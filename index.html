@@ -143,6 +143,29 @@
     </div>
   </section>
 
+  <!-- ============== Hot mod codes ============== -->
+  <section id="hotSection" class="bg-white/90 dark:bg-gray-900/90 backdrop-blur-md p-4 rounded-lg shadow hidden">
+    <header class="mb-3 flex items-center gap-2">
+      <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-300">🔥</span>
+      <h3 class="text-lg font-bold tracking-wide text-orange-600 dark:text-orange-300">热门改枪码</h3>
+      <span class="text-xs text-gray-400 ml-auto">按复制次数排行</span>
+    </header>
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-[560px] text-sm">
+        <thead class="text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
+          <tr>
+            <th class="px-3 py-2 text-left font-medium">武器</th>
+            <th class="px-3 py-2 text-left font-medium">改枪码</th>
+            <th class="px-3 py-2 text-left font-medium hidden sm:table-cell">描述</th>
+            <th class="px-3 py-2 text-center font-medium whitespace-nowrap">复制次数</th>
+            <th class="px-3 py-2 text-center font-medium">操作</th>
+          </tr>
+        </thead>
+        <tbody id="hotTbody" class="divide-y divide-gray-100 dark:divide-gray-800"></tbody>
+      </table>
+    </div>
+  </section>
+
   <!-- ============== Search + Category Filter ============== -->
   <section class="space-y-3">
     <div class="relative">
@@ -206,6 +229,7 @@
               <th class="border border-gray-200 dark:border-gray-700 px-4 py-2 text-left whitespace-nowrap">改枪码</th>
               <th class="border border-gray-200 dark:border-gray-700 px-4 py-2 whitespace-nowrap text-center">描述</th>
               <th class="border border-gray-200 dark:border-gray-700 px-4 py-2 whitespace-nowrap text-center">价值</th>
+              <th class="border border-gray-200 dark:border-gray-700 px-4 py-2 whitespace-nowrap text-center">复制次数</th>
               <th class="border border-gray-200 dark:border-gray-700 px-4 py-2 text-center">操作</th>
             </tr>
           </thead>
@@ -231,7 +255,7 @@
    updatedAt: 'YYYY-MM-DD'  日期越近排序越靠前，7天内显示 NEW 徽章
    ============================================================ */
 
-const categories = ['全部', '冲锋枪', '手枪', '步枪', '特殊武器', '狙击步枪', '精确射手步枪', '轻机枪', '霰弹枪'];
+let categories = ['全部', '冲锋枪', '手枪', '步枪', '特殊武器', '狙击步枪', '精确射手步枪', '轻机枪', '霰弹枪'];
 
 // 导航栏页签（目前仅“烽火地带改枪码”可用，其余敬请期待）
 const navTabs = [
@@ -245,7 +269,8 @@ const navTabs = [
 ];
 
 // 全部 65 把武器（参考站完整清单）
-const weapons = [
+// 内置数据：作为接口不可用 / 离线打开时的回退；线上会被 /api/weapons 覆盖
+let weapons = [
   // ===== 冲锋枪 (12) =====
   { name: 'QCQ171',     cat: '冲锋枪',   img: '🔫', desc: '国产 9mm 冲锋枪，低倍镜腰射利器', updatedAt: '2026-06-13',
     codes: [ { code: '6GV4DOS03I0RFPFTOIP1D', desc: '低倍腰射', tag: '推荐', value: '20W' }, { code: '6HQCQX5008JK8B8QKQ18K', desc: '高伤害', value: '12W' } ] },
@@ -425,7 +450,7 @@ const weaponIcons = {
   '复合弓': 'assets/weapons/compound-bow.webp',
 };
 function iconMarkup(w, cls) {
-  const src = weaponIcons[w.name];
+  const src = w.icon || weaponIcons[w.name];
   if (src) return `<img src="${src}" alt="${escapeAttr(w.name)}" loading="lazy" class="${cls}" />`;
   return `<span>${w.img}</span>`;
 }
@@ -435,6 +460,7 @@ function iconMarkup(w, cls) {
    ============================================================ */
 
 let activeCat = '全部';
+let counts = {};                 // { 改枪码: 复制次数 }
 const today = '2026-06-15';
 const NEW_DAYS = 7;
 
@@ -444,19 +470,20 @@ function daysSince(iso) {
   return Math.round((t - d) / 86400000);
 }
 
-// 按 updatedAt 倒序排（新的在前）
-weapons.sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
-
-document.getElementById('totalCount').textContent = weapons.length;
-document.getElementById('newCount').textContent = weapons.filter(w => daysSince(w.updatedAt) <= NEW_DAYS).length;
+// 整理数据并刷新统计（数据加载/更新后调用）
+function applyData() {
+  weapons.sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
+  document.getElementById('totalCount').textContent = weapons.length;
+  document.getElementById('newCount').textContent = weapons.filter(w => daysSince(w.updatedAt) <= NEW_DAYS).length;
+}
 
 // ---- Random weapon
 function setupRandom() {
-  const pool = weapons.map(w => ({ title: w.name, cat: w.cat }));
   const slot = document.getElementById('slot');
   const btn = document.getElementById('rngBtn');
 
   btn.addEventListener('click', () => {
+    const pool = weapons.map(w => ({ title: w.name, cat: w.cat }));
     if (!pool.length) return;
     btn.disabled = true;
     slot.classList.remove('final');
@@ -545,6 +572,7 @@ function renderGrid() {
         <span class="absolute top-2 right-2 bg-indigo-600 text-white text-xs px-2 py-1 rounded font-semibold">
           ${w.codes.length} 套
         </span>
+        ${w.copies ? `<span class="absolute bottom-2 left-2 bg-black/55 text-white text-[11px] px-2 py-0.5 rounded-full backdrop-blur-sm"><i class="fa-solid fa-fire text-orange-400"></i> ${w.copies}</span>` : ''}
       </div>
       <div class="p-4 flex items-center justify-between gap-2">
         <div class="min-w-0">
@@ -555,6 +583,56 @@ function renderGrid() {
       </div>
     </div>`;
   }).join('') || `<div class="col-span-full text-center py-12 text-gray-400">没有匹配的武器</div>`;
+}
+
+// ---- Hot mod codes ranking
+function renderHot() {
+  const section = document.getElementById('hotSection');
+  const tbody = document.getElementById('hotTbody');
+  const rows = [];
+  weapons.forEach(w => (w.codes || []).forEach(c => {
+    const n = counts[c.code] || 0;
+    if (n > 0) rows.push({ w, c, n });
+  }));
+  rows.sort((a, b) => b.n - a.n);
+  const top = rows.slice(0, 10);
+  if (!top.length) { section.classList.add('hidden'); return; }
+  section.classList.remove('hidden');
+  tbody.innerHTML = top.map(({ w, c, n }, i) => `
+    <tr class="hover:bg-orange-50/50 dark:hover:bg-gray-800/60 transition">
+      <td class="px-3 py-2 whitespace-nowrap font-medium text-gray-800 dark:text-gray-100">
+        <span class="text-orange-500 font-bold mr-1">${i + 1}</span>${escapeHtml(w.name)}
+      </td>
+      <td class="px-3 py-2"><code class="code-mono text-indigo-600 dark:text-green-400 break-all">${escapeHtml(c.code)}</code></td>
+      <td class="px-3 py-2 text-gray-500 dark:text-gray-400 hidden sm:table-cell">${escapeHtml(c.desc || '')}</td>
+      <td class="px-3 py-2 text-center whitespace-nowrap"><span class="copy-count text-orange-600 dark:text-orange-300 font-semibold" data-code="${escapeAttr(c.code)}">${n}</span> 次</td>
+      <td class="px-3 py-2 text-center whitespace-nowrap">
+        <button class="copy-btn inline-flex items-center gap-1 text-xs px-2 py-1 rounded border border-indigo-200 dark:border-indigo-700 hover:bg-indigo-600 hover:text-white text-indigo-700 dark:text-indigo-300 transition" data-copy="${escapeAttr(c.code)}"><i class="fa-regular fa-copy"></i> 复制</button>
+      </td>
+    </tr>`).join('');
+}
+
+// 复制计数：上报 + 更新页面显示
+function updateCountDisplays(code) {
+  document.querySelectorAll('.copy-count').forEach(el => {
+    if (el.dataset.code === code) el.textContent = counts[code] || 0;
+  });
+}
+async function bumpCount(code) {
+  if (!code) return;
+  counts[code] = (counts[code] || 0) + 1;   // 乐观更新
+  updateCountDisplays(code);
+  try {
+    const res = await fetch('/api/copy', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code })
+    });
+    if (res.ok) {
+      const d = await res.json();
+      if (typeof d.count === 'number') { counts[code] = d.count; updateCountDisplays(code); }
+    }
+  } catch (e) { /* 离线/接口不可用时忽略 */ }
+  renderHot();
 }
 
 // ---- Weapon detail modal
@@ -586,6 +664,9 @@ function openDetail(idx) {
         <span class="text-sm">${escapeHtml(c.desc || '')}</span>
       </td>
       <td class="border border-gray-200 dark:border-gray-700 px-4 py-2 text-center text-gray-700 dark:text-gray-300 whitespace-nowrap">${escapeHtml(c.value || '—')}</td>
+      <td class="border border-gray-200 dark:border-gray-700 px-4 py-2 text-center text-gray-500 dark:text-gray-400 whitespace-nowrap">
+        <span class="copy-count" data-code="${escapeAttr(c.code)}">${counts[c.code] || 0}</span> 次
+      </td>
       <td class="border border-gray-200 dark:border-gray-700 px-4 py-2 text-center whitespace-nowrap">
         <button class="copy-btn inline-flex items-center gap-1 text-xs px-2 py-1 rounded border border-indigo-200 dark:border-indigo-700 hover:bg-indigo-600 hover:text-white text-indigo-700 dark:text-indigo-300 transition" data-copy="${escapeAttr(c.code)}">
           <i class="fa-regular fa-copy"></i> 复制
@@ -649,6 +730,7 @@ function bindCopy() {
       document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
       toast('改枪码已复制');
     }
+    bumpCount(text);
   });
 
   // Card click → open detail (unless clicking copy button or related pill)
@@ -700,14 +782,31 @@ function escapeAttr(s) { return escapeHtml(s).replace(/\n/g, ' '); }
 /* ============================================================
    BOOT
    ============================================================ */
-renderNav();
-setupSidebar();
-setupRandom();
-renderFilters();
-renderGrid();
-setupSearch();
-bindCopy();
-setupDark();
+async function boot() {
+  renderNav();
+  setupSidebar();
+  setupRandom();
+  setupSearch();
+  bindCopy();
+  setupDark();
+
+  // 从后端加载最新数据（失败则使用内置回退数据）
+  try {
+    const res = await fetch('/api/weapons', { cache: 'no-store' });
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data.weapons) && data.weapons.length) weapons = data.weapons;
+      if (Array.isArray(data.categories) && data.categories.length) categories = data.categories;
+      if (data.counts && typeof data.counts === 'object') counts = data.counts;
+    }
+  } catch (e) { /* 离线或接口不可用，使用内置数据 */ }
+
+  applyData();
+  renderFilters();
+  renderGrid();
+  renderHot();
+}
+boot();
 </script>
 </body>
 </html>

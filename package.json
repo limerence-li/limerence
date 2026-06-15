@@ -1,0 +1,9 @@
+{
+  "name": "delta-mod-codes",
+  "version": "1.0.0",
+  "private": true,
+  "description": "三角洲改枪码分享站",
+  "dependencies": {
+    "@netlify/blobs": "^10.7.9"
+  }
+}

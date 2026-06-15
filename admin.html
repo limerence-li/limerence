@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>后台管理 · 三角洲改枪码</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+<style>
+  body { background: #f3f4f6; }
+  .inp { width: 100%; padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; background:#fff; }
+  .inp:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,.2); }
+  .btn { display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; transition:.15s; }
+  .code-row { display:grid; grid-template-columns: 1.6fr 1.2fr .7fr .7fr auto; gap:6px; align-items:center; }
+  @media (max-width: 640px){ .code-row { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body class="text-gray-800">
+
+<header class="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-gray-200">
+  <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
+    <h1 class="text-lg font-bold">改枪码后台<span class="text-indigo-600">管理</span></h1>
+    <div class="flex items-center gap-2 flex-wrap">
+      <input id="pw" type="password" placeholder="管理员密码" class="inp" style="width:160px" />
+      <button id="loadBtn" class="btn bg-gray-100 text-gray-700 hover:bg-gray-200"><i class="fa-solid fa-rotate"></i>重新加载</button>
+      <button id="saveBtn" class="btn bg-indigo-600 text-white hover:bg-indigo-700"><i class="fa-solid fa-floppy-disk"></i>保存全部</button>
+      <a href="index.html" class="btn bg-white border border-gray-300 text-gray-600 hover:bg-gray-50"><i class="fa-solid fa-arrow-up-right-from-square"></i>查看网站</a>
+    </div>
+  </div>
+  <div id="status" class="max-w-5xl mx-auto px-4 pb-2 text-sm hidden"></div>
+</header>
+
+<main class="max-w-5xl mx-auto p-4 space-y-4">
+  <div class="flex items-center justify-between">
+    <p class="text-sm text-gray-500">共 <strong id="cnt">0</strong> 把武器。修改后点右上角「保存全部」生效（保存需要密码）。</p>
+    <button id="addBtn" class="btn bg-emerald-600 text-white hover:bg-emerald-700"><i class="fa-solid fa-plus"></i>新增武器</button>
+  </div>
+  <div id="list" class="space-y-3"></div>
+  <div class="flex justify-center py-4">
+    <button id="addBtn2" class="btn bg-emerald-600 text-white hover:bg-emerald-700"><i class="fa-solid fa-plus"></i>新增武器</button>
+  </div>
+</main>
+
+<template id="weaponTpl">
+  <div class="weapon bg-white rounded-xl border border-gray-200 shadow-sm">
+    <div class="flex items-center gap-3 p-3 border-b border-gray-100 bg-gray-50 rounded-t-xl">
+      <i class="fa-solid fa-chevron-down toggle cursor-pointer text-gray-400 transition"></i>
+      <span class="w-7 text-center text-xl emoji-preview">🔫</span>
+      <strong class="name-preview flex-1 truncate">新武器</strong>
+      <span class="cat-preview text-xs px-2 py-0.5 rounded bg-indigo-50 text-indigo-700"></span>
+      <button class="del-weapon btn bg-red-50 text-red-600 hover:bg-red-100 !px-2 !py-1" title="删除武器"><i class="fa-solid fa-trash"></i></button>
+    </div>
+    <div class="body p-4 space-y-3">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <label class="block"><span class="text-xs text-gray-500">名称</span><input class="inp f-name" /></label>
+        <label class="block"><span class="text-xs text-gray-500">分类</span><select class="inp f-cat"></select></label>
+        <label class="block"><span class="text-xs text-gray-500">Emoji 图标</span><input class="inp f-img" maxlength="4" /></label>
+        <label class="block"><span class="text-xs text-gray-500">更新日期</span><input type="date" class="inp f-date" /></label>
+      </div>
+      <label class="block"><span class="text-xs text-gray-500">描述</span><input class="inp f-desc" /></label>
+      <input type="hidden" class="f-icon" />
+      <div>
+        <div class="flex items-center justify-between mb-1">
+          <span class="text-xs font-semibold text-gray-600">改枪码</span>
+          <button class="add-code btn bg-indigo-50 text-indigo-600 hover:bg-indigo-100 !px-2 !py-1 text-xs"><i class="fa-solid fa-plus"></i>加一条</button>
+        </div>
+        <div class="codes space-y-2"></div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template id="codeTpl">
+  <div class="code-row">
+    <input class="inp c-code" placeholder="改枪码" />
+    <input class="inp c-desc" placeholder="描述（如：中远距满改）" />
+    <input class="inp c-tag" placeholder="标签(可空)" />
+    <input class="inp c-value" placeholder="价值(如 24W)" />
+    <button class="del-code btn bg-red-50 text-red-600 hover:bg-red-100 !px-2 !py-1" title="删除"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+</template>
+
+<script>
+const API_WEAPONS = '/api/weapons';
+const API_SAVE = '/api/save-weapons';
+let categories = ['全部','冲锋枪','手枪','步枪','特殊武器','狙击步枪','精确射手步枪','轻机枪','霰弹枪'];
+
+const $ = (s, el=document) => el.querySelector(s);
+const $$ = (s, el=document) => [...el.querySelectorAll(s)];
+
+function showStatus(msg, type='info') {
+  const el = $('#status');
+  el.classList.remove('hidden');
+  const color = type === 'error' ? 'text-red-600' : type === 'success' ? 'text-emerald-600' : 'text-gray-500';
+  el.className = `max-w-5xl mx-auto px-4 pb-2 text-sm ${color}`;
+  el.textContent = msg;
+}
+
+function catOptions(selected) {
+  return categories.filter(c => c !== '全部')
+    .map(c => `<option value="${c}" ${c===selected?'selected':''}>${c}</option>`).join('');
+}
+
+function addCodeRow(codesEl, c={}) {
+  const node = $('#codeTpl').content.firstElementChild.cloneNode(true);
+  node.querySelector('.c-code').value = c.code || '';
+  node.querySelector('.c-desc').value = c.desc || '';
+  node.querySelector('.c-tag').value = c.tag || '';
+  node.querySelector('.c-value').value = c.value || '';
+  node.querySelector('.del-code').addEventListener('click', () => node.remove());
+  codesEl.appendChild(node);
+}
+
+function addWeaponCard(w={}, prepend=false) {
+  const node = $('#weaponTpl').content.firstElementChild.cloneNode(true);
+  const nameInp = node.querySelector('.f-name');
+  const catSel = node.querySelector('.f-cat');
+  const imgInp = node.querySelector('.f-img');
+  const descInp = node.querySelector('.f-desc');
+  const dateInp = node.querySelector('.f-date');
+  const iconInp = node.querySelector('.f-icon');
+  const codesEl = node.querySelector('.codes');
+
+  catSel.innerHTML = catOptions(w.cat);
+  nameInp.value = w.name || '';
+  imgInp.value = w.img || '🔫';
+  descInp.value = w.desc || '';
+  dateInp.value = w.updatedAt || new Date().toISOString().slice(0,10);
+  iconInp.value = w.icon || '';
+  (w.codes && w.codes.length ? w.codes : [{}]).forEach(c => addCodeRow(codesEl, c));
+
+  // header previews
+  const nameP = node.querySelector('.name-preview');
+  const catP = node.querySelector('.cat-preview');
+  const emojiP = node.querySelector('.emoji-preview');
+  const sync = () => { nameP.textContent = nameInp.value || '(未命名)'; catP.textContent = catSel.value; emojiP.textContent = imgInp.value || '🔫'; };
+  nameInp.addEventListener('input', sync); catSel.addEventListener('change', sync); imgInp.addEventListener('input', sync);
+  sync();
+
+  // collapse toggle
+  const body = node.querySelector('.body');
+  const toggle = node.querySelector('.toggle');
+  node.querySelector('.flex.items-center.gap-3').addEventListener('click', (e) => {
+    if (e.target.closest('.del-weapon')) return;
+    body.classList.toggle('hidden');
+    toggle.classList.toggle('-rotate-90');
+  });
+
+  node.querySelector('.add-code').addEventListener('click', () => addCodeRow(codesEl));
+  node.querySelector('.del-weapon').addEventListener('click', () => {
+    if (confirm(`确定删除武器「${nameInp.value || '未命名'}」？`)) { node.remove(); updateCount(); }
+  });
+
+  const list = $('#list');
+  if (prepend) list.prepend(node); else list.appendChild(node);
+  updateCount();
+  return node;
+}
+
+function updateCount() { $('#cnt').textContent = $$('#list .weapon').length; }
+
+function collect() {
+  return $$('#list .weapon').map(card => {
+    const w = {
+      name: card.querySelector('.f-name').value.trim(),
+      cat: card.querySelector('.f-cat').value,
+      img: card.querySelector('.f-img').value.trim() || '🔫',
+      desc: card.querySelector('.f-desc').value.trim(),
+      updatedAt: card.querySelector('.f-date').value,
+      codes: $$('.code-row', card).map(r => {
+        const o = { code: r.querySelector('.c-code').value.trim(), desc: r.querySelector('.c-desc').value.trim() };
+        const tag = r.querySelector('.c-tag').value.trim();
+        const value = r.querySelector('.c-value').value.trim();
+        if (tag) o.tag = tag;
+        if (value) o.value = value;
+        return o;
+      }).filter(c => c.code)
+    };
+    const icon = card.querySelector('.f-icon').value.trim();
+    if (icon) w.icon = icon;
+    return w;
+  }).filter(w => w.name);
+}
+
+async function load() {
+  showStatus('加载中…');
+  try {
+    const res = await fetch(API_WEAPONS, { cache: 'no-store' });
+    const data = await res.json();
+    if (Array.isArray(data.categories) && data.categories.length) categories = data.categories;
+    $('#list').innerHTML = '';
+    (data.weapons || []).forEach(w => addWeaponCard(w));
+    showStatus(`已加载 ${ (data.weapons||[]).length } 把武器`, 'success');
+  } catch (e) {
+    showStatus('加载失败：' + e.message, 'error');
+  }
+}
+
+async function save() {
+  const password = $('#pw').value;
+  if (!password) { showStatus('请输入管理员密码', 'error'); $('#pw').focus(); return; }
+  const weapons = collect();
+  showStatus('保存中…');
+  try {
+    const res = await fetch(API_SAVE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password, weapons })
+    });
+    const data = await res.json();
+    if (!res.ok) { showStatus('保存失败：' + (data.error || res.status), 'error'); return; }
+    showStatus(`保存成功！已写入 ${data.count} 把武器，网站约 1 分钟内更新。`, 'success');
+  } catch (e) {
+    showStatus('保存失败：' + e.message, 'error');
+  }
+}
+
+$('#loadBtn').addEventListener('click', load);
+$('#saveBtn').addEventListener('click', save);
+$('#addBtn').addEventListener('click', () => addWeaponCard({}, true).scrollIntoView({behavior:'smooth', block:'center'}));
+$('#addBtn2').addEventListener('click', () => addWeaponCard({}));
+
+load();
+</script>
+</body>
+</html>
